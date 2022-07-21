@@ -1,0 +1,28 @@
+{
+    "name": "Pomodoro Timer Extension for Chrome",
+    "description": "A Chrome Extension that shows timer",
+    "version": "1.0.0",
+    "manifest_version": 3,
+    "permissions": [
+        "storage",
+        "alarms",
+        "notifications"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "icons": {
+        "16": "/images/icon_16x16.png",
+        "48": "/images/icon_512x512.png",
+        "128": "/images/icon_128x128.png"
+    },
+    "action": {
+        "default_icon": {
+            "16": "/images/icon_16x16.png",
+            "48": "/images/icon_512x512.png",
+            "128": "/images/icon_128x128.png"
+        },
+        "default_popup": "index.html"
+    },
+    "options_page": "options.html"
+}

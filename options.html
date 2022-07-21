@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div class="pb-5 pt-5 d-flex justify-content-center mx-auto">
+        <h2 class="text_white d-flex">Pomodoro Timer</h2>
+
+        <hr>
+        <button class="btn-primary ml-5 border rounded-lg btn_block_height"><i href="#myModal" class="fas fa-cog mr-2"
+                data-toggle="modal"></i>Setting</button>
+        <button class="btn-primary ml-3 border rounded-lg btn_block_height"><i href="#myModalTodo"
+                class="bi bi-list-task mr-2" data-toggle="modal"></i>Task</button>
+        <button class="btn-primary ml-3 border rounded-lg btn_block_height"><i href="#myModalReport"
+                class="bi bi-bar-chart-line-fill mr-2" data-toggle="modal"></i>Report</button>
+    </div>
+
+
+    <div id="myModal" class="modal" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title ml-3">Settings</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"><i
+                            class="fas fa-times fa-lg mt-2 mr-2"></i></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row ml-1">
+                        <div class="col-12">
+                            <p class="h6 text-muted">Time (Minutes)</p>
+                        </div>
+
+                        <div class="col-lg-4">
+
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Focus</span>
+                                </div>
+                                <input id="input_focus" type="number" min="1" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Long break</span>
+                                </div>
+                                <input id="long_break_focus" type="number" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Short break</span>
+                                </div>
+                                <input id="short_break_focus" type="number" class="form-control" />
+                            </div>
+                        </div>
+
+                    </div>
+                    <hr />
+                    <div class="row ml-1">
+                        <div class="col">
+                            <p class="h6 text-muted mt-2">Auto Start Rounds</p>
+                        </div>
+                        <div class="col">
+                            <label class="switch">
+                                <input id="autoStartRoundsInput" type="checkbox" />
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <hr />
+
+                    <div class="row ml-1">
+                        <div class="col">
+                            <p class="h6 text-muted mt-2">Long Break Interval</p>
+                        </div>
+                        <div class="col">
+                            <form>
+                                <div class="row">
+                                    <div class="col">
+                                        <input type="range" class="custom-range" min="1" max="12"
+                                            id="longBreakIntervalInput" />
+                                    </div>
+                                    <div class="col">
+                                        <p class="font-weight-bold" id="txt_sliderValue"></p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row ml-1">
+                        <div class="col">
+                            <p class="h6 text-muted mt-2">Tick Sounds</p>
+                        </div>
+
+                        <div class="col">
+                            <label class="switch">
+                                <input id="tick_sound" type="checkbox" />
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row ml-1">
+                        <div class="col-sm-6">
+                            <p class="h6 text-muted mt-2">Timer Ending Notification</p>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="input-group mb-2">
+
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text notification-text">Last</span>
+                                </div>
+                                <input id="input_notification_time" type="number" min="0" step="1"
+                                    class="form-control col-sm-3" />
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text notification-text">&nbsp&nbspMinutes</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row ml-1">
+                        <div class="col">
+                            <p class="h6 text-muted mt-2">Background Music</p>
+                        </div>
+                        <div class="col">
+                            <select class="custom-select" id="backgroundMusicOptions" style="width: 10rem">
+                                <option>None</option>
+                                <option>Rain</option>
+                                <option>Ocean</option>
+                                <option>Forest</option>
+                                <option>Campfire</option>
+                                <option>Windy Desert</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer justify-content-center">
+                    <button id="setting_save_changes" data-dismiss="modal" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModalTodo" class="modal" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+
+                    <h5 class="modal-title" id="exampleModalLabel">Todo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div id="newtask">
+                            <input type="text" id="textvalue" placeholder="Add Task...">
+                            <button type="submit" id="addtask">Add Task</button>
+                        </div>
+                        <br><br>
+                        <div id="tasklist"></div>
+                    </div>
+                    <div class="container d-flex justify-content-center">
+                        <span id="NoDataTaskText">No data task yet</span>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button id="btn_clear_task" class="btn btn-primary">Clear Task</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="myModalReport" class="modal" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+
+
+                    <h5 class="modal-title" id="exampleModalLabel">Log</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+
+                </div>
+                <div class="modal-body">
+
+                    <table class="table table-striped table-responsive-md" id="logDataTable">
+                        <thead>
+                            <tr>
+                                <th scope="col">Session</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Start Time</th>
+                                <th scope="col">End Time</th>
+                                <th scope="col">Time</th>
+                                <th scope="col">Description</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="locationUpdateLog"></tbody>
+                    </table>
+
+                    <div class="container d-flex justify-content-center">
+                        <span id="NoDataLoggedText">No data logged yet</span>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button id="btn_clear_logs" class="btn btn-primary">Clear logs</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
