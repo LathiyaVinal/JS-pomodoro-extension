@@ -6,7 +6,7 @@
 
   Pomodoro is a fully responsive education website, <br />Responsive for all devices, build using HTML, CSS.
 
-  <a href="https://soft-sopapillas-cc1435.netlify.app"><strong>➥ Live Demo</strong></a>
+  <a href="https://lustrous-narwhal-7a8fd4.netlify.app/"><strong>➥ Live Demo</strong></a>
 
 </div>
 
@@ -24,7 +24,7 @@ Before you begin, ensure you have met the following requirements:
 
 ### Run Locally
 
-To run **EduMars** locally, run this command on your git bash:
+To run **Pomodoro** locally, run this command on your git bash:
 
 Windows:
 
