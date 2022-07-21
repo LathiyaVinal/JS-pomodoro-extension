@@ -4,7 +4,7 @@
 
   <h2 align="center">Pomodoro - Extension</h2>
 
-  Pomodoro is a fully responsive education website, <br />Responsive for all devices, build using HTML, CSS.
+  Pomodoro is a fully responsive education website, <br />Responsive for all devices, build using HTML, CSS and Javascript.
 
   <a href="https://lustrous-narwhal-7a8fd4.netlify.app/"><strong>➥ Live Demo</strong></a>
 
