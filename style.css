@@ -29,8 +29,8 @@
 }
 
 .full_body {
-    background-color: white;
-    height: 100%;
+    background-color:white;
+    height: 100vh;
     margin: 0%;
     padding: 0;
 }
@@ -435,4 +435,8 @@ tbody {
 .done {
 	text-decoration: line-through;
 	color: rgba(0, 0, 0, 0.2);
+}
+
+.modal-dialog{
+    max-height: 100vh;
 }
