@@ -351,6 +351,8 @@ function resetBodyColor() {
     main_container.style.backgroundColor = "dodgerblue"
 
     section_header.style.visibility = "visible"
+
+    label_current_state.style.color = "black"
 }
 
 
@@ -359,6 +361,7 @@ function changeBodyColor() {
     full_body.style.backgroundColor = "black"
 
     section_header.style.visibility = "hidden"
+    label_current_state.style.color = "white"
 }
 
 function startCountDown() {
