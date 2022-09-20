@@ -1,13 +1,16 @@
 let section_timer = document.querySelector('.timer_num');
-// let section_header = document.querySelector('.section_header').children;
 let section_header = document.querySelector('.section_header');
 let main_container = document.querySelector('.main_container');
 let modal_setting = document.querySelector('#modal_setting');
 let full_body = document.querySelector('.full_body');
+let btn_menu_sub = document.querySelector("#btn-menu-sub");
+let bottom_task_section = document.querySelector(".bottom-task-section");
 let label_current_state = document.querySelector('#label_current_state');
 let setting_save_changes = document.querySelector('#setting_save_changes');
 let btn_reset = document.querySelector('#btn_reset');
+let btn_clear_done_task = document.querySelector('#btn_clear_done_task');
 let btn_start = document.querySelector('#btn_start');
+let btn_play_pause = document.querySelector('#btn-play-pause');
 let btn_add_task = document.querySelector("#addtask");
 let task_list = document.querySelector("#tasklist");
 let btn_todo = document.querySelector('.bi-list-task');
@@ -15,16 +18,18 @@ var locationUpdateLog = document.getElementById("locationUpdateLog");
 let tick_sound = document.getElementById("tick_sound");
 let btn_clear_logs = document.getElementById("btn_clear_logs");
 let btn_clear_task = document.getElementById("btn_clear_task");
+let arrow_up = document.getElementById("arrow-up");
+let arrow_down = document.getElementById("arrow-down");
 var notificationTextInput = document.getElementById("input_notification_time");
-let NoDataTaskText = document.getElementById("NoDataTaskText");
 let autoStartRoundsInput = document.getElementById("autoStartRoundsInput");
 let longBreakIntervalInput = document.getElementById("longBreakIntervalInput");
 let txt_sliderValue = document.getElementById("txt_sliderValue");
 let backgroundMusicOptions = document.getElementById("backgroundMusicOptions");
-
 let focus_btn = document.getElementById("focus_id");
 let short_break_btn = document.getElementById("short_break_id");
 let long_break_btn = document.getElementById("long_break_id");
+let arrow_bg_up = document.getElementById("arrow-bg-up");
+let arrow_bg_down = document.getElementById("arrow-bg-down");
 
 var timeleft;
 var notificationTime;
@@ -75,7 +80,7 @@ init();
 
 function init() {
     currentTab = "focus";
-    contentDisplay();
+    displayTimerToMain();
     setDataInSettingModal();
     getToDoList();
     displayLog();
@@ -85,10 +90,68 @@ function init() {
     displayLongIntervalValue();
     displayBackGroundMusic();
     changeButtonColor();
+    displayCurrentLabel();
 }
 
+function displayCurrentLabel() {
+    if (localStorage.myitems !== undefined) {
+        if (localStorage.myitems.indexOf("li") == -1) {
+            label_current_state.innerHTML = "Time to focus!";
+        }
+    }
+}
+
+const btn_menu = document.querySelector("#btn-menu");
+const elContent = document.querySelector(".iXSNdx");
+
+btn_menu.addEventListener("click", function () {
+    elContent.classList.toggle("is-hidden");
+});
+
+document.querySelector(".add-task-div").addEventListener("click", function () {
+    document.querySelector(".add-text-dialog").classList.add("vanish");
+
+    window.scrollTo(0, document.body.scrollHeight);
+
+
+});
+
+$(document).click((event) => {
+    if ($(event.target).closest('#btn-menu').length) {
+    }
+    else if (!$(event.target).closest('#btn-menu-sub').length) {
+
+        if (!elContent.classList.contains("is-hidden")) {
+            console.log("skdnskndksnkdnsd")
+            elContent.classList.toggle("is-hidden");
+        }
+    }
+});
+
+document.querySelector(".add-task-cancel").addEventListener("click", function () {
+    document.querySelector(".add-text-dialog").classList.remove("vanish");
+})
+
+document.querySelector(".add-task-save").addEventListener("click", function () {
+    document.querySelector(".add-text-dialog").classList.remove("vanish");
+})
+
+btn_clear_done_task.addEventListener("click", function () {
+
+    var child = task_list.childNodes.length;
+
+    for (let i = 0; i < task_list.childNodes.length; i++) {
+        var child = task_list.childNodes[i];
+        var children = child.querySelector('#complete');
+        if (children.getAttribute('src') == 'images/tick-mark_highlight.png') {
+            child.remove();
+        }
+    }
+    storeTask();
+});
+
+
 function displayLongIntervalValue() {
-    console.log("Long interval : " + localStorage.longIntervalTime);
     if (localStorage.longIntervalTime) {
         txt_sliderValue.innerHTML = localStorage.longIntervalTime;
         longBreakIntervalInput.value = localStorage.longIntervalTime;
@@ -143,19 +206,18 @@ function displayAutoStartValue() {
     }
 }
 
-function contentDisplay() {
+function displayTimerToMain() {
 
     if (allPossibleModes[currentTab].localStorage) {
         timeleft = minutesToSeconds(allPossibleModes[currentTab].localStorage);
-        label_current_state.innerHTML = allPossibleModes[currentTab].lable;
     } else {
         timeleft = minutesToSeconds(allPossibleModes[currentTab].default_time);
-        label_current_state.innerHTML = allPossibleModes[currentTab].lable;
     }
+
     section_timer.style.borderColor = allPossibleModes[currentTab].borderColor;
     section_timer.innerHTML = secondsToMinutes(timeleft);
+    document.title = secondsToMinutes(timeleft) + " - " + label_current_state.innerHTML;
 }
-
 
 function changeButtonColor() {
 
@@ -216,14 +278,14 @@ focus_btn.addEventListener('click', function () {
     currentTab = "focus";
     currentIntervalCount = 0;
     stopTimer();
-    contentDisplay();
+    displayTimerToMain();
     changeButtonColor();
 });
 short_break_btn.addEventListener('click', function () {
     currentTab = "short_break";
     currentIntervalCount = 0;
     stopTimer();
-    contentDisplay();
+    displayTimerToMain();
     changeButtonColor();
 });
 
@@ -231,12 +293,11 @@ long_break_btn.addEventListener('click', function () {
     currentTab = "long_break";
     currentIntervalCount = 0;
     stopTimer();
-    contentDisplay();
+    displayTimerToMain();
     changeButtonColor();
 });
 
 longBreakIntervalInput.addEventListener("input", function () {
-    console.log(longBreakIntervalInput.value);
     txt_sliderValue.innerHTML = longBreakIntervalInput.value;
     localStorage.longIntervalTime = longBreakIntervalInput.value;
 });
@@ -251,7 +312,7 @@ tick_sound.addEventListener("change", function () {
 
 btn_clear_task.addEventListener('click', function () {
     task_list.innerHTML = "";
-    localStorage.myitems = task_list.innerHTML;
+    storeTask();
     displayNoTask();
 })
 
@@ -274,8 +335,6 @@ function playBackGroundMusic() {
     if (localStorage.backgroundMusicOptionsValue) {
         if (localStorage.backgroundMusicOptionsValue !== "None") {
             if (timerIsRunning) {
-                console.log("music option : " + localStorage.backgroundMusicOptionsValue)
-                console.log("play music : " + allBackgroundMusic[localStorage.backgroundMusicOptionsValue])
                 allBackgroundMusic[localStorage.backgroundMusicOptionsValue].play();
             }
         }
@@ -294,9 +353,7 @@ function displayBackGroundMusic() {
 function displayNoTask() {
     if (localStorage.myitems !== undefined) {
         if (localStorage.myitems.indexOf("li") == -1) {
-            NoDataTaskText.style.display = "block";
-        } else {
-            NoDataTaskText.style.display = "none";
+            label_current_state.innerHTML = allPossibleModes[currentTab].lable;
         }
     }
 }
@@ -314,16 +371,24 @@ setting_save_changes.addEventListener('click', function () {
     allPossibleModes["long_break"].localStorage = document.getElementById("long_break_focus").value;
     allPossibleModes["short_break"].localStorage = document.getElementById("short_break_focus").value;
 
-    contentDisplay();
+    displayTimerToMain();
 });
-
-// btn_stop.addEventListener('click', function () {
-//     stopTimer();
-// })
 
 btn_reset.addEventListener('click', function () {
     stopTimer();
-    contentDisplay();
+    displayTimerToMain();
+
+})
+
+arrow_bg_up.addEventListener("click", function () {
+    document.querySelector(".input-time").value = parseInt(document.querySelector(".input-time").value) + 1;
+})
+
+arrow_bg_down.addEventListener("click", function () {
+
+    if (document.querySelector(".input-time").value > 0) {
+        document.querySelector(".input-time").value = parseInt(document.querySelector(".input-time").value) - 1;
+    }
 
 })
 
@@ -333,11 +398,8 @@ function stopTimer() {
     stopBackGroundMusic();
     resetBodyColor();
     btn_start.innerHTML = "START";
-}
-
-
-function notifyTimerEnds() {
-    console.log("Timer End");
+    btn_play_pause.style.visibility = "hidden"
+    bottom_task_section.style.display = "block"
 }
 
 btn_clear_logs.addEventListener('click', function () {
@@ -352,9 +414,9 @@ function resetBodyColor() {
 
     section_header.style.visibility = "visible"
 
-    label_current_state.style.color = "black"
+    label_current_state.style
+        .color = "black"
 }
-
 
 function changeBodyColor() {
     main_container.style.backgroundColor = "black"
@@ -363,6 +425,15 @@ function changeBodyColor() {
     section_header.style.visibility = "hidden"
     label_current_state.style.color = "white"
 }
+
+btn_play_pause.addEventListener("click", function () {
+    if (confirm("Are you sure you want to finish the round early? (The remaining time will not be counted in the report.)", "OK", "Cancle")) {
+        timeleft = 0;
+        stopTimer();
+        autoStartRound();
+        displayTimerToMain();
+    }
+})
 
 function startCountDown() {
 
@@ -373,37 +444,37 @@ function startCountDown() {
     currentStartTime = getTime();
     currentDate = getDate();
     btn_start.innerHTML = "STOP";
+    btn_play_pause.style.visibility = "visible"
+    bottom_task_section.style.display = "none"
 
-    console.log("current tab auto start : " + currentTab)
+
     updateSeconds = setInterval(function () {
         if (timeleft <= 0) {
 
             stopTimer();
-            notifyTimerEnds();
             currentEndTime = getTime();
             allPossibleModes[currentTab].sound.play();
             appendDataToLogModal();
             displayLog();
             autoStartRound();
-            contentDisplay();
+            displayTimerToMain();
             sendNotificationToBrowser(currentTab);
         }
 
         playTickSound();
         playEndingNotification();
         section_timer.innerHTML = secondsToMinutes(timeleft);
+        document.title = secondsToMinutes(timeleft) + " - " + label_current_state.innerHTML;
         timeleft -= 1;
 
     }, 1000);
 }
 
 function sendNotificationToBrowser(data) {
-    console.log("Notification: " + chrome.notifications);
-    // chrome.alarms.create("startRequest", { periodInMinutes: 1 });
 
     if (chrome.notifications !== undefined) {
         var options = {
-            title: "Vinal Pomodoro",
+            title: "Pomodoro Timer",
             message: data,
             iconUrl: "/images/favicon-16x16.png",
             type: "basic",
@@ -414,7 +485,6 @@ function sendNotificationToBrowser(data) {
 }
 
 btn_start.addEventListener('click', function () {
-    console.log("timerIsRunning : " + timerIsRunning);
 
     if (!timerIsRunning) {
         startCountDown();
@@ -426,42 +496,26 @@ btn_start.addEventListener('click', function () {
 
 function autoStartRound() {
 
-    console.log("autoStartRound_1 : " + currentIntervalCount);
-    console.log("autoStartRound_2 : " + ((localStorage.longIntervalTime) - 1))
+    if (currentTab === "focus") {
+        currentTab = "long_break"
+        displayTimerToMain();
+        changeButtonColor();
+        changeEstPomodoro();
+    } else if (currentTab === "long_break" || currentTab === "short_break") {
+        currentTab = "focus"
+        displayTimerToMain();
+        changeButtonColor();
+    }
 
     if (localStorage.autoStartRoundsValue === "true") {
         if (currentTab === "focus" && currentIntervalCount == ((localStorage.longIntervalTime) - 1)) {
             currentIntervalCount = 0;
-            currentTab = "long_break"
-            contentDisplay();
-
-            // changeBodyColor();
-            changeButtonColor();
-
-
-            setTimeout(() => {
-                startCountDown();
-            }, 1000);
-
-
         } else if (currentTab === "focus") {
             currentIntervalCount++;
-            currentTab = "short_break"
-            contentDisplay();
-            // changeBodyColor();
-            changeButtonColor();
-            setTimeout(() => {
-                startCountDown();
-            }, 1000);
-        } else if (currentTab === "long_break" || currentTab === "short_break") {
-            currentTab = "focus"
-            contentDisplay();
-            //   changeBodyColor();
-            changeButtonColor();
-            setTimeout(() => {
-                startCountDown();
-            }, 1000);
         }
+        setTimeout(() => {
+            startCountDown();
+        }, 1000);
     }
 }
 
@@ -478,93 +532,46 @@ function playTickSound() {
     }
 }
 
-function appendDataToLogModal() {
-    var sessionsCol = document.createElement("th");
-
-    sessionsCol.setAttribute("scope", "row");
-    if (currentTab === "focus") {
-        var sessionData = document.createTextNode("Focus");
-    } else if (currentTab === "short_break") {
-        var sessionData = document.createTextNode("Short Break");
-    } else if (currentTab === "long_break") {
-        var sessionData = document.createTextNode("Long Break");
-    }
-    sessionsCol.appendChild(sessionData);
-
-    var dateCol = document.createElement("td");
-    dateData = document.createTextNode(currentDate);
-    dateCol.appendChild(dateData);
-
-    var startTimeCol = document.createElement("td");
-    data = document.createTextNode(currentStartTime);
-    startTimeCol.appendChild(data);
-
-    var endTimeCol = document.createElement("td");
-    data = document.createTextNode(currentEndTime);
-    endTimeCol.appendChild(data);
-
-    var timeCol = document.createElement("td");
-    if (allPossibleModes[currentTab].localStorage) {
-        data = document.createTextNode(allPossibleModes[currentTab].localStorage + " min");
-        timeCol.appendChild(data);
-
-    } else {
-        data = document.createTextNode(allPossibleModes[currentTab].defaultTime + " min");
-        timeCol.appendChild(data);
-    }
-
-    var row = document.createElement("tr");
-    row.setAttribute("scope", "row");
-    row.appendChild(sessionsCol);
-    row.appendChild(dateCol);
-    row.appendChild(startTimeCol);
-    row.appendChild(endTimeCol);
-    row.appendChild(timeCol);
-
-    row.innerHTML += '<td><input class="form-control" type="text" placeholder="" onchange="storeLogDescription(this)"></td>';
-    row.innerHTML +=
-        `<td><button type="button" class="close" onclick = "deleteLog(this)" aria-label="Close"><img src='images/bin-with-lid.png'></img></button></td>`;
-    locationUpdateLog.appendChild(row);
-    localStorage.logContents = locationUpdateLog.innerHTML;
-}
-
-function storeLogDescription(item) {
-    item.outerHTML = '<td><input class="form-control" type="text" value="' + item.value + '" onchange="storeLogDescription(this)"></td>';
-    localStorage.logContents = locationUpdateLog.innerHTML;
-}
-
 function deleteLog(item) {
     item.parentNode.parentNode.remove();
     localStorage.logContents = locationUpdateLog.innerHTML;
+
+    displayLog();
+
 }
 
-btn_add_task.addEventListener('click', function () {
-    if (document.querySelector("#textvalue").value !== "") {
+function uuidv4() {
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
+}
 
-        var listItem = document.createElement("li");
-        var todo = document.createTextNode(document.querySelector("#textvalue").value);
-        listItem.appendChild(todo);
-        listItem.setAttribute("id", "list_item");
-        listItem.setAttribute("class", "list-group-item");
-        listItem.setAttribute("onclick", "checkedWhenclicked(this)");
-        listItem.setAttribute("onmouseover", "taskMouseOver(this)");
-        listItem.setAttribute("onmouseout", "taskMouseOut(this)");
-        listItem.setAttribute("style", "cursor:pointer; overflow-wrap: break-word;");
-        var completedButton = document.createElement("img");
-        completedButton.setAttribute("id", "delete");
-        completedButton.innerHTML = '<i class="fas fa-trash-alt fa-sm"></i>';
-        completedButton.classList.add("close");
-        completedButton.setAttribute("onclick", "deleteTasks(this)");
-        listItem.appendChild(completedButton);
-        completedButton.src = 'images/bin-with-lid.png';
+function displayTaskOnMain(item) {
 
-        task_list.appendChild(listItem);
+    if (item !== undefined) {
 
-        document.querySelector("#textvalue").value = "";
-        storeTask();
-        displayNoTask();
+        const child = item.childNodes;
+
+        for (let i = 0; i < child.length; i++) {
+
+            if (child[i].id === "todo-div-text") {
+                for (let j = 0; j < child[i].childNodes.length; j++) {
+                    if (child[i].childNodes[j].id !== undefined) {
+                        if (child[i].childNodes[j].id === "todo-text-parent") {
+                            let inneEle = child[i].childNodes[j];
+                            for (let k = 0; k < inneEle.childNodes.length; k++) {
+                                if (inneEle.childNodes[k].id === "todo-text") {
+                                    label_current_state.innerHTML = inneEle.childNodes[k].innerHTML;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        };
     }
-})
+}
 
 function taskMouseOut(item) {
     item.style.fontSize = "1rem";
@@ -578,9 +585,17 @@ function taskMouseOver(item) {
 
 
 function checkedWhenclicked(item) {
-    console.log("checkedWhenclicked")
-    item.style.transition = "all 0.2s ease-in";
-    item.classList.toggle("done");
+
+    item.parentElement.querySelector("#todo-text").classList.toggle("done");
+
+    if (item.getAttribute('src') == 'images/tick-mark_highlight.png') {
+
+        item.src = "images/tick-mark.png";
+    } else {
+        item.src = "images/tick-mark_highlight.png";
+    }
+
+    storeTask();
 }
 
 function storeTask() {
@@ -588,10 +603,10 @@ function storeTask() {
 }
 
 function deleteTasks(item) {
-    item.parentElement.style.transition = "all 0.2s ease-in";
-    item.parentElement.classList.add("slide-away");
-    item.parentElement.addEventListener("transitionend", function () {
-        item.parentElement.remove();
+    item.parentElement.parentElement.parentElement.style.transition = "all 0.2s ease-in";
+    item.parentElement.parentElement.parentElement.classList.add("slide-away");
+    item.parentElement.parentElement.parentElement.addEventListener("transitionend", function () {
+        item.parentElement.parentElement.parentElement.remove();
         storeTask();
         displayNoTask();
     });
@@ -600,7 +615,7 @@ function deleteTasks(item) {
 function getToDoList() {
     var storedValues = window.localStorage.myitems;
     if (storedValues !== undefined) {
-        document.querySelector("#tasklist").innerHTML = storedValues;
+        task_list.innerHTML = storedValues;
     }
 }
 
@@ -676,4 +691,222 @@ function getTime() {
     }
     var time = hours + ":" + minutes + amOrPm;
     return time;
+}
+
+
+
+function appendDataToLogModal() {
+    var sessionsCol = document.createElement("th");
+
+    sessionsCol.setAttribute("scope", "row");
+    if (currentTab === "focus") {
+        var sessionData = document.createTextNode("Focus");
+    } else if (currentTab === "short_break") {
+        var sessionData = document.createTextNode("Short Break");
+    } else if (currentTab === "long_break") {
+        var sessionData = document.createTextNode("Long Break");
+    }
+    sessionsCol.appendChild(sessionData);
+
+    var dateCol = document.createElement("td");
+    dateData = document.createTextNode(currentDate);
+    dateCol.appendChild(dateData);
+
+    var startTimeCol = document.createElement("td");
+    data = document.createTextNode(currentStartTime);
+    startTimeCol.appendChild(data);
+
+    var endTimeCol = document.createElement("td");
+    data = document.createTextNode(currentEndTime);
+    endTimeCol.appendChild(data);
+
+    var timeCol = document.createElement("td");
+    if (allPossibleModes[currentTab].localStorage) {
+        data = document.createTextNode(allPossibleModes[currentTab].localStorage + " min");
+        timeCol.appendChild(data);
+
+    } else {
+        data = document.createTextNode(allPossibleModes[currentTab].defaultTime + " min");
+        timeCol.appendChild(data);
+    }
+
+    var row = document.createElement("tr");
+    row.setAttribute("scope", "row");
+    row.appendChild(sessionsCol);
+    row.appendChild(dateCol);
+    row.appendChild(startTimeCol);
+    row.appendChild(endTimeCol);
+    row.appendChild(timeCol);
+
+    row.innerHTML += '<td><input class="form-control" type="text" placeholder="" onchange="storeLogDescription(this)"></td>';
+
+    row.innerHTML +=
+        `<td><button id="btn_delete" onclick="deleteLog(this)" ontype="button" class="close" aria-label="Close"><img src='images/bin-with-lid.png'></img></button></td>`;
+
+    locationUpdateLog.appendChild(row);
+    localStorage.logContents = locationUpdateLog.innerHTML;
+}
+
+function storeLogDescription(item) {
+    item.outerHTML = '<td><input class="form-control" type="text" value="' + item.value + '" onchange="storeLogDescription(this)"></td>';
+    localStorage.logContents = locationUpdateLog.innerHTML;
+}
+
+btn_add_task.addEventListener('click', function () {
+    if (document.querySelector("#textvalue").value !== "") {
+
+        const out = `<li key="uuidv4()" id="list_item" class="list-group-item d-flex align-items-center" style="cursor:pointer; overflow-wrap: break-word;"
+        onmouseout="taskMouseOut(this)" onmouseover="taskMouseOver(this)"
+        onclick="displayTaskOnMain(this)">
+        <div id="todo-div-text" class="d-flex align-items-center">
+            <div id = "todo-text-parent" class="d-flex align-items-center">
+                <img id="complete" src="images/tick-mark.png" alt=""
+                    onclick="checkedWhenclicked(this)"></img>
+                <div id="todo-text">${document.querySelector("#textvalue").value}</div>
+            </div>
+            <div id="pomoCount1" class="d-flex align-items-center">
+                <div id="pomoCount">0/${document.querySelector(".input-time").value}</div>
+                <img id="delete" src="images/bin-with-lid.png" alt="" onclick="deleteTasks(this)"></img>
+            </div>
+        </div>
+    </li>`
+
+
+        task_list.innerHTML = out + task_list.innerHTML;
+
+        document.querySelector("#textvalue").value = "";
+        storeTask();
+        displayNoTask();
+    }
+})
+
+
+let btn_clear_act = document.getElementById("btn_clear_act");
+btn_clear_act.addEventListener("click", function () {
+    console.log("clear act pomodoro");
+
+    clearActPomodoro();
+});
+
+function clearActPomodoro() {
+
+    const child = task_list.childNodes;
+
+    for (let i = 0; i < child.length; i++) {
+
+        console.log(833);
+        if (child[i].id === "list_item") {
+            for (let j = 0; j < child[i].childNodes.length; j++) {
+                if (child[i].childNodes[j].id !== undefined) {
+                    if (child[i].childNodes[j].id === "todo-div-text") {
+                        let inneEle = child[i].childNodes[j];
+                        for (let k = 0; k < inneEle.childNodes.length; k++) {
+                            console.log(840);
+
+                            if (inneEle.childNodes[k].id === "todo-text-parent") {
+
+                                let inneEleTodo = inneEle.childNodes[k];
+                                console.log(845);
+                                for (let v = 0; v < inneEleTodo.childNodes.length; v++) {
+                                    console.log(847);
+                                    if (inneEleTodo.childNodes[v].id !== undefined) {
+                                        if (inneEleTodo.childNodes[v].id === "todo-text") {
+                                            let innerTodoText = inneEleTodo.childNodes[v].innerHTML;
+                                            console.log(851);
+
+                                            for (let x = 0; x < inneEle.childNodes.length; x++) {
+                                                console.log(855);
+                                                if (inneEle.childNodes[x].id === "pomoCount1") {
+                                                    let inneEleTodopomo = inneEle.childNodes[x];
+                                                    for (let z = 0; z < inneEleTodopomo.childNodes.length; z++) {
+                                                        console.log(859);
+                                                        if (inneEleTodopomo.childNodes[z].id === "pomoCount") {
+                                                            var str = inneEleTodopomo.childNodes[z].innerHTML;
+
+                                                            var rest = str.substring(0, str.lastIndexOf("/"));
+                                                            var last = str.substring(str.lastIndexOf("/") + 1, str.length);
+                                                            inneEleTodopomo.childNodes[z].innerHTML = 0 + "/" + last;
+                                                            console.log("First : " + rest);
+                                                            console.log("Second : " + last);
+
+                                                        }
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    storeTask();
+}
+
+
+function changeEstPomodoro() {
+
+    if (label_current_state.innerHTML !== "Time to focus!" && label_current_state.innerHTML !== "Time for a break!") {
+
+        console.log("INSIDE : " + label_current_state.innerHTML);
+
+        const child = task_list.childNodes;
+
+        for (let i = 0; i < child.length; i++) {
+
+            if (child[i].id === "list_item") {
+                for (let j = 0; j < child[i].childNodes.length; j++) {
+                    if (child[i].childNodes[j].id !== undefined) {
+                        if (child[i].childNodes[j].id === "todo-div-text") {
+                            let inneEle = child[i].childNodes[j];
+                            for (let k = 0; k < inneEle.childNodes.length; k++) {
+
+                                if (inneEle.childNodes[k].id === "todo-text-parent") {
+
+                                    let inneEleTodo = inneEle.childNodes[k];
+
+                                    for (let v = 0; v < inneEleTodo.childNodes.length; v++) {
+
+                                        if (inneEleTodo.childNodes[v].id !== undefined) {
+                                            if (inneEleTodo.childNodes[v].id === "todo-text") {
+                                                let innerTodoText = inneEleTodo.childNodes[v].innerHTML;
+
+                                                if (innerTodoText === label_current_state.innerHTML) {
+
+                                                    for (let x = 0; x < inneEle.childNodes.length; x++) {
+                                                        if (inneEle.childNodes[x].id === "pomoCount1") {
+                                                            let inneEleTodopomo = inneEle.childNodes[x];
+                                                            for (let z = 0; z < inneEleTodopomo.childNodes.length; z++) {
+                                                                if (inneEleTodopomo.childNodes[z].id === "pomoCount") {
+                                                                    var str = inneEleTodopomo.childNodes[z].innerHTML;
+
+                                                                    var rest = str.substring(0, str.lastIndexOf("/"));
+                                                                    var last = str.substring(str.lastIndexOf("/") + 1, str.length);
+                                                                    inneEleTodopomo.childNodes[z].innerHTML = parseInt(rest) + 1 + "/" + last;
+                                                                    console.log("First : " + rest);
+                                                                    console.log("Second : " + last);
+
+                                                                }
+
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    storeTask();
 }

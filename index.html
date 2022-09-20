@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;">
+
     <title>Pomodoro timer</title>
 
     <link rel="stylesheet" href="style.css">
@@ -12,7 +14,7 @@
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/bootstrap-icons.css">
     <script src="js/jquery.js"></script>
-    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script> -->
+    <link rel="icon" type="image/png" href="images/icon_24x24.png">
 
 </head>
 
@@ -20,14 +22,14 @@
     <div class="full_body">
         <div id="header">
             <div class="d-flex">
-                <img src="images/icon_32x32.png">
+                <img id="main-icon" src="images/icon_24x24.png">
                 <p class="text_white" id="title_pomo">Pomodoro Timer</p>
             </div>
             <div class="button_controls">
                 <button id="setting_modal" class="button_c btn_block_height"><i href="#myModal" data-toggle="modal"><img
                             src="images/setting.png"><span>Setting</span></i></button>
-                <button class="button_c ml-3 btn_block_height"><i href="#myModalTodo" data-toggle="modal"><img
-                            src="images/list-text.png"><span>Task</span></i></button>
+                <!-- <button class="button_c ml-3 btn_block_height"><i href="#myModalTodo" data-toggle="modal"><img
+                            src="images/list-text.png"><span>Task</span></i></button> -->
                 <button class="button_c ml-3 btn_block_height"><i href="#myModalReport" data-toggle="modal"><img
                             src="images/graph.png"><span>Report</span></i></button>
             </div>
@@ -45,26 +47,73 @@
                     <div>
                         <p class="timer_num">25:00</p>
                     </div>
-
                 </div>
 
                 <div class="section_footer">
-                    <!-- <button id="btn_start" >Start</button> -->
+                    <img class="play-pause" style="visibility: hidden;" src="images/play-and-pause-button.png" />
                     <button id="btn_start">START</button>
-                    <!-- <i id="btn_reset" class="bi bi-bootstrap-reboot fa-2x"></i> -->
-                    <!-- <button id="btn_stop" class="footer_btn">Stop</button> -->
-                    <!-- <button id="btn_reset">Reset</button> -->
+                    <img id="btn-play-pause" class="play-pause" src="images/play-and-pause-button.png" />
                 </div>
             </div>
             <div class="btn_reset_parent mx-auto">
                 <!-- <p>#1</p> -->
                 <img id="btn_reset" src="images/undo-arrow.png">
             </div>
-            <div>
-                <p id="label_current_state">Time to focus!</p>
+            <p id="label_current_state">Time to focus!</p>
+            <hr />
+            <div class="bottom-task-section">
+                <div class="task-head">
+                    
+                    <div>Tasks</div>
+                    <div id="btn-menu">
+                        <img src="/images/dots.png">
+
+                        <div id="btn-menu-sub" class="iXSNdx is-hidden">
+                            <div class="menu_item" id="btn_clear_act"><img src="images/trash-bin.png"><span>Clear act pomodoro</span></div>
+                            <div class="menu_item" id="btn_clear_done_task"><img src="images/verified.png"><span>Clear done task</span></div>
+                            <hr style="padding: 0%; margin:0%">
+                            <div class="menu_item" id="btn_clear_task"><img src="images/trash-bin.png"><span>Clear all task</span></div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+ 
+                <ul id="tasklist">
+                   
+                </ul>
+
+                <div class="add-task-div">
+                    <img class="add-task-img" src="images/plus-circle-white.png" alt="add-task-img">
+                    <div class="txt-add-task">Add Task</div>
+                </div>
+
+                <div class="add-text-dialog">
+                    <input id="textvalue" class="input-text" type="text" placeholder="What are you working on?">
+                    <div class="input-text-est">Est Pomodoros</div>
+                    <div class="input-enter">
+                        <input class="input-time" type="text" value="1">
+                        <div id="arrow-bg-up" class="arrow-bg"><img id="arrow-up" class="arrow-small"
+                                src="/images/caret-arrow-up.png"></div>
+                        <div id="arrow-bg-down" class="arrow-bg"><img id="arrow-down" class="arrow-small"
+                                src="/images/caret-down.png"></div>
+                    </div>
+
+                    <div class="add-text-footer">
+                        <div class="add-task-cancel">Cancel</div>
+                        <div id="addtask" class="add-task-save">Save</div>
+                    </div>
+                </div>
+
+                <div class="main-foot">
+
+                </div>
             </div>
+        </div>
+
+        <div>
 
         </div>
+
 
         <div id="myModal" class="modal" role="dialog" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
@@ -209,50 +258,6 @@
             </div>
         </div>
 
-        <div id="myModalTodo" class="modal" role="dialog">
-            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-
-                        <h3 class="modal-title ml-3">Todo</h3>
-                        <button type="button" class="close button-pressed-no-shadow my-auto" data-dismiss="modal"
-                            aria-label="Close">
-                            <span class="modal-close-button" aria-hidden="true"><img
-                                    src="images/close.png"></img></span>
-                        </button>
-
-                    </div>
-                    <div class="modal-body">
-                        <div class="container todo-main-content">
-                            <div id="newtask" class="input-group mb-3">
-                                <input type="text" class="form-control" id="textvalue"
-                                    placeholder="Task Description...">
-
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary button-pressed-no-shadow" type="submit"
-                                        id="addtask">Add</button>
-                                </div>
-                            </div>
-
-                            <ul id="tasklist"></ul>
-                        </div>
-
-                        <div class="text-muted d-flex justify-content-center">
-                            <h2 id="NoDataTaskText">No data task yet</h2>
-                        </div>
-
-                    </div>
-
-                    <div class="modal-footer">
-                        <div class="container d-flex justify-content-center">
-                            <button type="button" class="btn btn-primary button-pressed-no-shadow shadow-none"
-                                id="btn_clear_task">Clear Tasks</button>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
 
         <div id="myModalReport" class="modal" role="dialog">
             <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
